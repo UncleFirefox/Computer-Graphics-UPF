@@ -1,0 +1,60 @@
+//to grab the color from the pixel shader
+varying vec3 light_position_ps;
+varying vec3 eye_position_ps;
+varying vec3 normal_ps;
+varying vec3 point_position_ps;
+
+varying vec3 light_ambient_ps;
+varying vec3 material_ambient_ps;
+
+varying vec3 light_diffuse_ps;
+varying vec3 material_diffuse_ps;
+
+varying vec3 light_specular_ps;
+varying vec3 material_specular_ps;
+varying float alpha_ps;
+
+void main()
+{
+	
+	//calcule the normal in world space (the normal_model is like the model but without traslation)
+	vec3 normal = normalize(normal_ps);
+
+	//calcule the light_vector
+	vec3 light_vector = light_position_ps - point_position_ps;
+	
+	//normalize the light vector
+	light_vector = normalize(light_vector);
+	
+	
+	//calcule the NdotL (factor difuso)
+	//avoid negative values (it doesnt makes sense to have negative light)
+	float NdotL = clamp (dot (light_vector, normal), 0.0 , 1.0);
+	
+	
+	//Calculos para el specular
+	vec3 reflected_vector = ((2 * dot (normal, light_vector)) * normal) - light_vector;
+	reflected_vector = normalize(reflected_vector);
+	
+	
+	vec3 vision_vector = eye_position_ps - point_position_ps;
+	vision_vector = normalize(vision_vector);
+	
+	float RdotV = clamp (dot (reflected_vector, vision_vector), 0.0, 1.0);
+	
+	//Volcado de variables, por si acaso
+	vec3 material_ambient = material_ambient_ps;
+	vec3 light_ambient = light_ambient_ps;
+	
+	vec3 material_diffuse = material_diffuse_ps;
+	vec3 light_diffuse = light_diffuse_ps;
+	
+	vec3 light_specular = light_specular_ps;
+	vec3 material_specular = material_specular_ps;
+	float alpha = alpha_ps;
+	
+	vec3 pixel_color = (light_ambient * material_ambient)  + (NdotL * light_diffuse * material_diffuse) + (pow(RdotV, alpha) * light_specular * material_specular);
+	//vec3 pixel_color = (light_ambient * material_ambient) + (NdotL * light_diffuse * material_diffuse);
+	
+	gl_FragColor = vec4(material_ambient * light_ambient,1.0);
+}

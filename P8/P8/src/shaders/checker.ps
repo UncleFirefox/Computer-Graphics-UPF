@@ -1,0 +1,17 @@
+varying vec3 pixel_position;
+varying vec3 pixel_color;
+
+void main()
+{
+	//we need to make a copy of this vec3 because some cards dont allow to modify varying vars from the pixel shader
+	vec3 pos = pixel_position;
+	
+	float size = 20.0;
+	float factor = ((int)(pos.x / size) % 2 ? 1.0 : -1.0);
+
+	if ( ((int)(pos.z / size) % 2) ) 
+		factor *= -1.0;
+
+	//store the final color in the FragColor
+	gl_FragColor = vec4(pixel_color * ( factor == 1.0 ? 1.0 : 0.0) , 1.0);
+}

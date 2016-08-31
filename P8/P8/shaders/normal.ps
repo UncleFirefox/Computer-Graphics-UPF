@@ -1,0 +1,8 @@
+//to grab the color from the pixel shader
+varying vec3 pixel_color;
+
+void main()
+{
+	//store the final color in the FragColor
+	gl_FragColor = vec4(pixel_color,1.0);
+}
